@@ -1,5 +1,8 @@
 \documentclass[11pt]{article}
 \usepackage{fullpage,amsthm,amsfonts,amssymb,epsfig,amsmath,times,amsthm}
+\usepackage{mathtools}
+\DeclarePairedDelimiter\ceil{\lceil}{\rceil}
+\DeclarePairedDelimiter\floor{\lfloor}{\rfloor}
 
 \newtheorem{theorem}{Theorem}
 \newtheorem{claim}[theorem]{Claim}
@@ -14,10 +17,12 @@ Christopher Hsiao -- chhsiao@ucsc.edu -- 1398305
 \section*{Solution to Problem 1 - Is it a Knock-out?}
 Q: 
 You are given a pile of envelopes, each containing a vote for a candidate, and a machine that can tell you if two envelopes contain votes for the same candidate or not without opening them. Your task is to design an algorithm which by using the machine $O(nlogn)$ times, decides if a second round is needed or not. You are not allowed to open any envelopes. If the answer is that no second round is needed, your algorithm should also offer an envelope containing a vote for the winner.
-
 We must prove two claims.
 \begin{claim} 
-Given a pile of votes, I will be able to recursively find and return the envelope of a majority candidate in that pile recursively (assuming one exists).
+Given a pile of votes, I will be able to recursively find and return the envelope of a majority candidate in that pile recursively (assuming one exists). Note that this not guarantee anything with regards to the winning candidate condition of: 
+	\begin{center}
+		number of votes for any candidate $\geq$ $\floor*{\frac{n}{2}} + 1$
+	\end{center}
 \end{claim}
 \begin{proof}
 Here's a detailed in depth proof of that claim. We know it's detailed and in depth because we include a lot of details and build our argument logically.
