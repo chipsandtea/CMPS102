@@ -1,6 +1,7 @@
 \documentclass[11pt]{article}
 \usepackage{fullpage,amsthm,amsfonts,amssymb,epsfig,amsmath,times,amsthm}
 \usepackage{mathtools}
+\usepackage{enumitem}
 \DeclarePairedDelimiter\ceil{\lceil}{\rceil}
 \DeclarePairedDelimiter\floor{\lfloor}{\rfloor}
 
@@ -17,16 +18,66 @@ Christopher Hsiao -- chhsiao@ucsc.edu -- 1398305
 \section*{Solution to Problem 1 - Is it a Knock-out?}
 Q: 
 You are given a pile of envelopes, each containing a vote for a candidate, and a machine that can tell you if two envelopes contain votes for the same candidate or not without opening them. Your task is to design an algorithm which by using the machine $O(nlogn)$ times, decides if a second round is needed or not. You are not allowed to open any envelopes. If the answer is that no second round is needed, your algorithm should also offer an envelope containing a vote for the winner.
-We must prove two claims.
 \begin{claim} 
 Given a pile of votes, I will be able to recursively find and return the envelope of a majority candidate in that pile recursively (assuming one exists). Note that this not guarantee anything with regards to the winning candidate condition of: 
 	\begin{center}
 		number of votes for any candidate $\geq$ $\floor*{\frac{n}{2}} + 1$
 	\end{center}
 \end{claim}
-\begin{proof}
-Here's a detailed in depth proof of that claim. We know it's detailed and in depth because we include a lot of details and build our argument logically.
+\begin{proof} To prove \textbf{Claim 1}, we need to first observe out problem as a recursive tree.\\
+\\
+\textbf{Divide: }
+For our function $f(n)$, we divide our input $n$ by 2 per recursive level, halving the size of the input and creating two smaller problems each time. This makes the recursive relations properties: 
+\begin{center}
+	$a = 2, b = 2,$ and $k \leq (log_2 n) -1$\\
+\end{center}
+This yields, at the lowest level, $n/2$ problems, each of size 2, $a.k.a$ each problem is at least a pair of votes.\\
+\\
+\textbf{Conquer:}
+Now, we have set the stage to "conquer" the problem, by running an algorithm on the smaller problems and returning (in this case) an envelope containing a vote. We can view each sub problem as a mini-election. The role of each "minion", in this case, is to attempt to return an envelope containing the majority vote for its respective mini-election. Each minion only ever looks at two envelopes, which, aside from the lowest level, will be two envelopes handed to it by its own minions.\\
+\\
+More formally, minions on each level (aside from the $k = (log_2 n) - 1$ level) return an envelope if any candidate has $\floor*{\frac{n}{2^k}}$ votes.\\
+The combination algorithm is as follows:\\
+\\
+\textbf{Algorithm:}
+From our perspective at the top of the recursive tree, we will potentially be handed up an envelope from the left sub-tree (represented as $L$), and an envelope from the right sub-tree (represented as $R$). If no envelope is handed up from either half, $L$ or $R$ = null.\\
+Using the machine, first observe there are four outcomes of the recursion. We will detail how to handle these cases more generally later.
+\begin{enumerate}
+\item $L = null, R = null$ - no envelope passed up\\
+	- If no envelope is passed up, then no candidate won either half of the tree, meaning they received less than $\floor*{\frac{n}{4}} + 1$ votes in their respective halves, and no candidate could possibly win. Second round is necessary.
+\item $L = 1, R = null$ - one envelope is passed up. note this represents one envelope passed up. This scenario is handled the same way as $L = 0, R = 1$.\\
+	- If one envelope is passed up, then that is the only candidate who has a potential to win the election. Cross check that envelope against the entire array of envelopes in $O(n)$, and count the number of $true's$ output by the machine. If that count $\geq \floor*{\frac{n}{2}} + 1$, then that candidate has won. Otherwise, no candidate has won, and a second round is necessary.
+\item $L = 1, R = 2$ - an envelope is passed up by both sub-trees, but for different candidates.\\
+	- Do the same cross checking method above in $O(n)$ for each envelope, and if the count for either envelope is $\geq \floor*{\frac{n}{2}} + 1$, then that candidate won. If neither candidate has at least $\floor*{\frac{n}{2}} + 1$ votes, then second round is necessary.
+\item $L = 1, R = 1$ - two envelopes for the same candidate are passed up by both sub-trees.\\
+	- The candidate then has at least $\floor*{\frac{n}{4}} + 1$ votes, since they must have strictly more than half of their respective trees, so the candidate is guaranteed to win.
+\end{enumerate}
+
+Now, when these cases are encountered in our recursion, here is how they are handled.
+\begin{enumerate}
+\item $L = null, R = null$ - no envelope passed up\\
+	- return null.
+\item $L = 1, R = null$ - one envelope is passed up. note this represents one envelope passed up. This scenario is handled the same way as $L = 0, R = 1$.\\
+	- return that one envelope, since that candidate still has a chance of being the majority winner.
+\item $L = 1, R = 2$ - an envelope is passed up by both sub-trees, but for different candidates.\\
+	- you "cancel" these votes out, and return null.
+\item $L = 1, R = 1$ - two envelopes for the same candidate are passed up by both sub-trees.\\
+	- you return either envelope.\\\\
+\end{enumerate}
+\textbf{Correctness:}
+The meat of this problem lies in the third case, where the machine returns false and returns neither envelope. The point of this algorithm isn't to figure out how many votes a winning candidate has (indeed, if one even exists), but to propagate a single vote up the recursive tree, and that envelope will only survive the trip to the top if that candidate has a majority in that sub-tree.\\
+\\
+Consider the following case: there is a candidate $A$ with $\floor*{\frac{n}{4}} + 1$ votes in the $L$ sub-tree, and the remainder of the votes are distributed to an arbitrary number of candidates. At the $k^{th}$ level, distribute the votes such that every single pair has at least one vote for candidate $A$. By the pigeonhole principle, candidate $A$ is guaranteed at least one pair of envelopes containing votes for him, since there are ${\frac{n}{4}}$ pairs available in the $L$ sub-tree at the lowest level. Since he is guaranteed at least one pair, this also means that every single other pair effectively cancels out, and no other envelopes are propagated upwards. The only envelope that gets propagated is an envelope in the pair with two votes for candidate $A$.\\
+\\
+Now, let us consider the other cases. Say for example, instead of envelopes for candidate $A$ being distributed equally amongst the available pairs, with only one containing two $A$ votes, consider the case where there are now more $A$ envelope pairs. The trade off, now, is that we have opened up room for other candidates to potentially make pairs. However, we have already established that in the worst case, candidate $A$ is guaranteed at least one pair, so for any extra pair that candidate $A$ makes, no other candidate is able to make more pairs than candidate $A$. Candidate $A$ will always at least have one more pair than any other candidate (assuming $A$ has a majority).\\be
+\\
+This means, that no matter what, some candidate $A$ with a majority of his subtree will at least have 1 pair more than any other candidate, and therefore will be propagated to the top of the subtree and eventually returned by the subtrees root  node.
+
 \end{proof}
+
+As you can see, we can now successfully propagate an envelope containing a vote for a majority candidate through the recursive tree to the top of the sub-tree, and to us. Then, I provided an algorithm to handle all four possible cases at the top of the tree, which can successfully determine whether or not a second round is necessary.\\
+\\
+The recurrence relation for this process is $T(n) \leq 2T(n/2) + O(n)$
 
 \begin{claim} 
 Something something $2n$ in $G$. 
