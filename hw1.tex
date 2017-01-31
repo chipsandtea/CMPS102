@@ -150,6 +150,8 @@ After splitting up our original problem, at the lowest level we're left with pot
 \end{enumerate}
 \end{proof}
 
+As you can see, $(j_l, k_l), (j_r, k_r),$ are the values being passed up from the two subtrees of any non-leaf node in the recursive subtree, and with that information we can compare it with $(j_c,  k_c)$, which was determined in the merge step.\\
+\\
 Since we're using a modified $MergeSort$, our recurrence relation as stated above is $T(n) \leq 2T(n/2) + O(n)$, which by the Master Theorem is yields a runtime of $O(nlogn)$.
 
 \newpage
