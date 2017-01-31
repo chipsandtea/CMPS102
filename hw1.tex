@@ -69,81 +69,100 @@ The meat of this problem lies in the third case, where the machine returns false
 \\
 Consider the following case: there is a candidate $A$ with $\floor*{\frac{n}{4}} + 1$ votes in the $L$ sub-tree, and the remainder of the votes are distributed to an arbitrary number of candidates. At the $k^{th}$ level, distribute the votes such that every single pair has at least one vote for candidate $A$. By the pigeonhole principle, candidate $A$ is guaranteed at least one pair of envelopes containing votes for him, since there are ${\frac{n}{4}}$ pairs available in the $L$ sub-tree at the lowest level. Since he is guaranteed at least one pair, this also means that every single other pair effectively cancels out, and no other envelopes are propagated upwards. The only envelope that gets propagated is an envelope in the pair with two votes for candidate $A$.\\
 \\
-Now, let us consider the other cases. Say for example, instead of envelopes for candidate $A$ being distributed equally amongst the available pairs, with only one containing two $A$ votes, consider the case where there are now more $A$ envelope pairs. The trade off, now, is that we have opened up room for other candidates to potentially make pairs. However, we have already established that in the worst case, candidate $A$ is guaranteed at least one pair, so for any extra pair that candidate $A$ makes, no other candidate is able to make more pairs than candidate $A$. Candidate $A$ will always at least have one more pair than any other candidate (assuming $A$ has a majority).\\be
+Now, let us consider the other cases. Say for example, instead of envelopes for candidate $A$ being distributed equally amongst the available pairs, with only one containing two $A$ votes, consider the case where there are now more $A$ envelope pairs. The trade off, now, is that we have opened up room for other candidates to potentially make pairs. However, we have already established that in the worst case, candidate $A$ is guaranteed at least one pair, so for any extra pair that candidate $A$ makes, no other candidate is able to make more pairs than candidate $A$. Candidate $A$ will always at least have one more pair than any other candidate (assuming $A$ has a majority).\\
 \\
-This means, that no matter what, some candidate $A$ with a majority of his subtree will at least have 1 pair more than any other candidate, and therefore will be propagated to the top of the subtree and eventually returned by the subtrees root  node.
-
+This means, that no matter what, some candidate $A$ with a majority of his subtree will at least have 1 pair more than any other candidate, and therefore will be propagated to the top of the subtree and eventually returned by the subtrees root node.
 \end{proof}
 
 As you can see, we can now successfully propagate an envelope containing a vote for a majority candidate through the recursive tree to the top of the sub-tree, and to us. Then, I provided an algorithm to handle all four possible cases at the top of the tree, which can successfully determine whether or not a second round is necessary.\\
-\\
-The recurrence relation for this process is $T(n) \leq 2T(n/2) + O(n)$
-
-\begin{claim} 
-Something something $2n$ in $G$. 
-\end{claim}
-\begin{proof}
-We prove this claim, that something something $2n$ in $G$.
-\end{proof}
-Therefore, if $2n$ in $G$ is equivalent to whether there is a sastisfying assignment. For runtime, we must build the graph and then run Ford-Fulkerson. Building the graph is $O(n(n+n))$, since there are $O(n+n+n)$ vertices, and $O(n(n+n))$ edges between child and favor/snack vertices (and they take constant time to add in). Running Ford-Fulkerson is $O(|E|*F)$. We can put an upper bound of $2n$ on the flow, since there is clearly a cut of that size coming out of the source, so we get a runtime of $O(n(n+n) * n) \Rightarrow O(n^{3})$
+\linebreak
+The recurrence relation for this process is $T(n) \leq 2T(n/2) + O(n)$, which by the Master Theorem is yields a runtime of $O(nlogn)$.
 
 \newpage
 
-\section*{Solution to Problem 3}
+\section*{Solution to Problem 2 - Coastal California}
 
+The amazing algorithmic skills you developed in 201 made you very rich, so that you are in the market for a waterfront lot on which to build a house. All such lots have three straight sides and one irregular side, due to the coastline. The irregular side consists of segments parallel to the road, each segment specified by its width and its distance from the road. Both numbers for each segment are \textbf{integers}.
 
+Your dream is to build (i) a rectangular house (ii) with one side that touches the road, that is (iii) as big as possible (money can't buy taste). Design an algorithm which given a lot returns the area of your dream house in $O(n log n)$ steps, where $n$ is the integer equal to the lot's entire length along the road, i.e., the sum of the digths of the segments.\\
+\\
+\textbf{Algorithm: Divide and Conquer}
+First we will rotate the image so that the road is on the bottom, and the land is facing upwards.
+\begin{enumerate}
+\item Scan the array and search for the smallest height.
+\item Split the array at this point, and recursively find the maximum area of each side respectively.
+\item Find the $\max$ between a.) the maximum rectangle in the left half of the array, b.) the maximum rectangle in the right half of the array, or c.) the smallest height $\times$ length of the array.
+\end{enumerate}
 
-Given a list of $n$ things $s_i$, and a list of $c$ other things, design an algorithm that decides whether or not it is possible to do things, and nothing has more than $\lceil \frac{n}{c} \rceil$ things. Assume that you can find ``too far" or not.
-
-Construct $G$ as follows:
-
-%\includegraphics[width=5in]{hw4prob2.png}
-
-With $G$ and if there is a max of size $n$. We must prove two claims.
-\begin{claim} 
-If there is $n$ in $G$, there is a thing. 
-\end{claim}
 \begin{proof}
-If there is $n$, there is $n$. Finally, since each has $\lceil n/c \rceil$, there are no more.
+The reason we initially scan the array for the smallest height is so we can guarantee that when we search for a rectangle that spans both sides of the graph, one can exist. The lowest height also guarantees that we can at least create a rectangle that spans the entire graph.
+
+The idea is to increment upon what the algorithm knows as the existing largest rectangle (in terms of the data its seen), and then compare it with the other pertinent areas at the end of the recursive calls.
+
+At first glance, it may seem like the recursive relation is dependent on index of the smallest height, but this isn't actually the case, since we split by bars, every segment of the graph will need to be recursed on. This means that though the number of levels in the recursive tree may fluctuate, the number of sub-problems created will stay the same. As such, we can treat the problem as a traditional $T(n) \leq 2T(n/2) + O(n)$, which by the master theorem is a $O(nlogn)$ algorithm.
 \end{proof}
 
+\newpage
 
-\begin{claim} 
-If there is a thing, there is $n$ in $G$. 
+\section*{Solution to Problem 3 - Save the Environment}
+
+You are working as a climate change analyst for the Cooperative Institute for Climate Science. Your main task is to study the variation in Chicago's temperature. Let $C$ be an array containing the temperatures of the last $n$ days. Your goal is to find the pair of days with the greatest temperature  \textbf{increase}, i.e.,
+\begin{equation}
+	\max\limits_{1 \leq j < k \leq n} C[k] - C[j].
+\end{equation}
+If the temperature never increased, then report that. Give a $O(nlogn)$ algorithm for this task.
+\begin{claim}
+We can find the maximum temperature increase (assuming the temperature did increase) across the mid point of the array where the left index $j_c$ is found in the left half of the array and the right index $k_c$ is found in the right half in O(n) time.
 \end{claim}
 \begin{proof}
-We know that this means there are no more than $\lceil n/c \rceil$ things. So given that it exists, we have shown how to construct $2n$ in $G$.
+The case of finding a max temperature pair across the center is straightforward. Observe that the max temperature value can be found by simply scanning for the smallest element of the left half, and pairing that up with the largest value of the right half, sequential property is guaranteed to be preserved. This way, we can state the largest pair across the center to be $(j_c, k_c)$ such that 
+
+\begin{equation}
+	j_c = \min(C[1], C[2], ... , C[\floor*{\frac{n}{2}}]),  k_c = \max(C[\floor*{\frac{n}{2}}+1], ... , C[n])
+\end{equation}
+
+Now, if $C[j_c] > C[k_c]$, then we can set the values of $j_c$ and $k_c$ to 1, so that the max temperature is reported as $0$, implying there is no temperature increase.\\
+
+To scroll through and find $min(C[1], C[2], ... , C[\floor*{\frac{n}{2}}])$ and $max(C[\floor*{\frac{n}{2}}+1], ... , C[n])$ are both $O(\floor*{\frac{n}{2}})$ operations, so the runtime for locating the indices of the max temperature if one exists across the midpoint is $O(n)$. it is important to note this can be done in a modified MergeSort, where in the $Merge(L,R)$, we don't sort the values, but use that time to scroll through $L$ and $R$ and find the indices of the values we need.
 \end{proof}
-Therefore, the question of whether there is a $n$ in $G$ is equivalent to whether there is a thing. For runtime, $O(n*c)$, since there are $n+c+2$ and $O(nc)$ things. We can put an upper bound of $n$, so our total runtime would be $O(n^{2}c)$.
 
-
-\section*{Solution to Problem X.AA from the textbook}
-
-\textbf{(a)} Consider the following matrix:
-
-%\includegraphics{hw4prob4a.png}
-
-No matter how you rearrange the rows and columns, row 1 can contribute at most one 1 to the diagonal, and column 1 one more.
-
-\textbf{(b)}
-Define a $G$ with $x$s on the left and $y$s on the right. We connect a $i$ to a $j$ if there is $m_{ij}$. $G$ looks something like this:
-
-%\includegraphics[width=3in]{hw4prob4b.png}
-
-We claim this good if and only if $G$ has a problem we know how to solve.
 \begin{claim} 
-There is $G$. 
+Given some array $C$, we can find and return a pair of indices $(j_l, k_l)$ and $(j_r, k_r)$, each representing the maximum temperature increase (if one exists) in their respective halves of the array. Otherwise, their values will equal 1, which implies a maximum temperature increase of 0.
 \end{claim}
 \begin{proof}
-Suppose there is $G$, with $x_{i}$ matched to $y_{f(i)}$. We swap $i$ ends up in $f(i)$. Since $f$ is a one-to-one and onto function of $\{1,2,\ldots,n\}$ to $\{1,2,\ldots,n\}$, we know exactly one destination. Since $m_{i,f(i)} = 1$ for all $i$, when we send $i$ to $f(i)$, there will be $m_{f(i),f(i)}$. Since this will be true, the thing will have 1.
-\end{proof}
-\begin{claim} 
-If $M$, there is $G$. 
-\end{claim}
-\begin{proof}
-Suppose that $M$. After the swapping, $i$ has moved $f(i)$ and $j$ has moved $g(j)$. Since $f$ and $g$, if $f^{-1}(k)$ and $g^{-1}(k)$, $k$th in the thing. Note that $(x_{f^{-1}(k)}, y_{g^{-1}(k)}$, since we know that the original. If we pick these $k$, it will give us $G$. 
+At the highest level, our goal is to solve the problem by breaking it into two subproblems of size $\frac{n}{2}$. This yields a recurrence relation of:
+\begin{equation}
+	T(n) \leq 2T(\frac{n}{2}) + O(n)
+\end{equation}
+We will be using a modified MergeSort for this proof.
+For the array C, we will find a pair of indices from both the left  $L[1...\frac{n}{2}]$ half and the right $R[\frac{n}{2}+1...n]$ as $(j_l, k_l)$ and $(j_r, k_r)$.
+Our goal is to find the indices which correspond to the greatest profit across the left half, the right half, and across the midpoint of $C$.\\
+
+After splitting up our original problem, at the lowest level we're left with potential pairings of dates on either side of the array. We only want to split to $n/2$ levels down, such that we can form pairs of indices at the lowest level. The only time where $n = 1$ is when there is an odd number of vertices  on the half of the problem we're solving, such that one index ends up as a leaf node.
+
+\textbf{Algorithm: Modified Merge Sort}
+\begin{enumerate}
+\item At some node, get the left and right arrays from the two subproblems of said node.
+\item Get the max temperature increase from the left and right nodes.
+\item Using our claim above to get the max temperature increase across both halves using the modified $Merge(L,R)$.
+\item Compare $(j_l, k_l), (j_r, k_r),$ and $(j_c,  k_c)$ values.
+\item Push up the pair of indices representing the greatest increase in temperature along with a new array the output of the modified $Merge(L,R)$.
+\end{enumerate}
 \end{proof}
 
-The run-time for this would be $O(n^2)$.
+Since we're using a modified $MergeSort$, our recurrence relation as stated above is $T(n) \leq 2T(n/2) + O(n)$, which by the Master Theorem is yields a runtime of $O(nlogn)$.
+
+\newpage
+
+\section*{Solution to Problem 4 - Dive Bar}
+1. Give a simple $O(n^2)$ algorithm for the slot machine problem given a $O(n)$ time algorithm for l-LMONEY.
+\textbf{Algorithm: $O(n^2)$}
+\begin{enumerate}
+\item Call l-Money on all indices. Note that this is already an $O(n^2)$ process, since we're calling an $O(n)$ algorithm on $n$ indices.
+\item Loop over the indices again, this time to calculate and determine  which actually yielded the greatest return. Note that this adds $O(n^2)$ to our runtime, which gets absorbed into the existing $O(n^2)$ runtime anyway.
+\end{enumerate}
+\begin{proof}
+On our first pass through, we first determine the optimal stopping index for each index in the array. Then, it is simply a matter of actually calculating the greatest return based on those previous calculations, which clearly works.
+\end{proof}
 
 \end{document}
