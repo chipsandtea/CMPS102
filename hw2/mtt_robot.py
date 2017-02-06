@@ -11,3 +11,16 @@
 # Q: Is the algorithm described for the MTT BP3k optimal, or can you find a counter example?
 # 
 # Bonus: What if the cost instead of |m_j - l_i| was (m_j - l_i)^2? Wouuld your algorithm still work? If not, could yo modify it so that it did.
+
+# boxes/pillows = (int val, bool paired)
+# calculate all minimum pairings 
+def mtt_picker(boxes, pillows):
+	pairings = {}
+
+	for i in range(len(pillows)):
+		min = float("inf")
+		curr_pair = (0,0)
+		for j in range(len(boxes)):
+			cost = abs(pillows[i][0] - boxes[j][0])
+			if cost < min:
+				curr_pair = (i, j, cost)
