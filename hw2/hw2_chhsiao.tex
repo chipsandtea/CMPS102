@@ -95,7 +95,7 @@ What if a group simply isn't scheduled in the greedy schedule, but exists in the
 
 \begin{proof}If this group is scheduled and the time is truly the latest the group can go, that means that at that point in time it is not the group with the largest $p$. This means there is some other group (namely, the one chosen in the greedy algorithm), with the largest $p$ out of all groups for that time slot. By replacing this old group with the group for that time slot in the greedy algorithm. As the group in the greedy algorithm must have some $p_j \geq$ the challenging group, so the total number of people can only stay constant or go up.\end{proof}
 
-This algorithm sorts the list of tuples $(c_i, p_i$ on $c_i$ in descending order, This can be done in $O(nlogn)$ time using MergeSort. Then, in a single pass through the amount of time allotted, if we assume the time to pick the group with the largest $p_i$ is a constant time operation, then the algorithm runs with an upper bound of $O(nlogn)$, where the worst case run time is where the number of minutes (i.e. $t_{max}$) is equal to the number of groups $n$, where one group is scheduled every minute.
+This algorithm sorts the list of tuples $(c_i, p_i)$ on $c_i$ in descending order, This can be done in $O(nlogn)$ time using MergeSort. Then, in a single pass through the amount of time allotted, if we use a Max-Heap to return the group with the largest $p_i$, then finding the next max via Heapify takes $O(logn)$ This means the algorithm runs with an upper bound of $O(nlogn * logn)$ which gets absorbed into $O(nlogn)$.
 
 
 \newpage
@@ -105,9 +105,32 @@ This algorithm sorts the list of tuples $(c_i, p_i$ on $c_i$ in descending order
 
 Let $G$ be a connected graph with two different spanning trees, $T$ and $T'$. We say that $T$ and $T'$ are neighbors if $T$ contains exactly one edge that is not in $T'$ and $T'$ contains exactly one edge that is not in $T$.
 
-Now, from any graph $G$, we can build a graph $H$ as follows: the vertices of $H$ are the spanning trees of $G$, and there is an edge between two vertices of $H$ if the corresponding spanning trees are neighbors. Is it true that if $G$ is connected, then $H$ is connected?
+Now, from any graph $G$, we can build a graph $H$ as follows: the vertices of $H$ are the spanning trees of $G$, and there is an edge between two vertices of $H$ if the corresponding spanning trees are neighbors. Is it true that if $G$ is connected, then $H$ is connected?\\
 
 Given a connected graph $G$, we can say by definition that it contains at least one spanning tree, since otherwise the graph wouldn't be connected. With this graph H, our goal is to return a path between $u, v$ in $H$. In order to prove connectivity of $H$, it is enough to prove that we can always return such a path connecting two vertices in $H$.
+
+To prove this, we will utilize properties of the cutset of a spanning tree.
+
+\begin{algo*}
+\begin{enumerate}
+\item Given a pair of vertices $(u,v)$ in the graph $H$, start at the source vertex $u$.
+\item Take a cutset of the spanning tree $u$ of the graph $G$.
+\item Form some new edge $e$ not originally in $u$ to form a cycle.
+\item Delete a original edge in $u$ that spanned the cutset.
+\item You have now formed $u'$.
+\end{enumerate}
+\end{algo*}
+
+\begin{claim*} $u'$ is a spanning tree connected to $u$ in the graph $H$ by a single edge.\end{claim*}
+\begin{proof} In a cutset of a spanning tree, if you form a new edge across the cutset, you get a cycle. You can remove an edge in any cycle to get a spanning tree. Essentially, what we did was form a cycle over $u$, and then remove an old edge of $u$ to get $u'$, which is also a spanning tree, but now differs by $u$ by exactly one edge. Namely, by the edge that was created and the edge that was deleted. As such, there must be an edge between $u$ and $u'$ in the graph $H$.\end{proof}
+
+Now we know that, given some vertex $u$, we are able to get to any neighbor of $u$ using the algorithm above, simply by removing the edge that the neighbor doesn't have, and inserting the edge that the neighbor has, and that $u$ doesn't.
+
+\begin{claim*} We can use this to form a path between any pair of vertices $(u,v)$ in the graph $H$.\end{claim*}
+\begin{proof}Because the graph $G$ is connected, all possible spanning trees of $G$ overlap over some edges in some way. As such, this means that given any two spanning trees of $G$, we can transform them, one edge at a time, into the other. Every transformation is an edge in $H$, a combination of transformations forms a path in $H$ connecting any two vertices $(u,v)$ in $H$. \end{proof}
+
+This algorithm has a runtime
+
 
 \newpage
 
@@ -120,9 +143,9 @@ Given a connected graph $G$, we can say by definition that it contains at least 
  \begin{algo*}
  \begin{enumerate}
  \item Assign weights of road = 1, and bridges = 0.
- \item Run Prim's algorithm on $G$ and return the number of bridges. Subtract this from $E$ to get the maximum number of roads. 
+ \item Run Prim's algorithm on $G$ and get a spanning tree with the minimum number of roads and most bridges.
  \item Assign weights of road = 0, and bridges = 1.
- \item Run Prim's algorithm on $G$ and this time, you'll return the minimum number of roads.
+ \item Run Prim's algorithm on $G$ and get a spanning tree with the 
  \end{enumerate}
  \end{algo*}
 
