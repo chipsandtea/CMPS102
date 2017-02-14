@@ -68,8 +68,11 @@ Since $C_j'$ is the difference between the larger box with a larger pillow, rega
 
 Thus, any solution set of pairs claiming to be more optimal than ours can, through surgery (correcting inversions) become our greedy solution set of pairs, with at least no increase in total cost. However, since their solution set is equal to ours, they couldn't possibly have a better total cost, so by proof of contradiction, our greedy algorithm must be the most optimal.\\
 \end{proof}
-\textbf{TT BoxPicker3000}\\
-While MTT BoxPicker3000 does minimize cost, its algorithm of calculating all possible costs for all combinations and then comparing all costs to pick the pair that yields the lowest one is a brute force solution, which runs in $O(n^2)$ time. Our greedy algorithm utilizes sorting, which can be done in $O(nlogn)$ time, so our algorithm is more optimal.
+\textbf{TT BoxPicker3000}
+\begin{claim*}TT BoxPicker3000 is not an optimal algorithm.\end{claim*}
+\begin{proof}
+With a pair of boxes $(8,4)$ and a pair of pillows $(20,7)$, BoxPicker3000 will choose the pairing $(8,7)$ and $(4,20)$, to yield a total cost of $17$. However, the optimal pairing is $(8,20)$ and $(4,7)$, which yields a total cost of 15.
+\end{proof}
 \newpage
 
 \section*{Solution to Problem 2 - Parade Planning}
@@ -115,8 +118,10 @@ To prove this, we will utilize properties of the cutset of a spanning tree.
 \begin{enumerate}
 \item Given a pair of vertices $(u,v)$ in the graph $H$, start at the source vertex $u$.
 \item Take a cutset of the spanning tree $u$ of the graph $G$.
+\item Ignore edges/vertices we've seen before.
 \item Form some new edge $e$ not originally in $u$ to form a cycle.
 \item Delete a original edge in $u$ that spanned the cutset.
+\item Store which edges were deleted and added.
 \item You have now formed $u'$.
 \end{enumerate}
 \end{algo*}
@@ -129,7 +134,7 @@ Now we know that, given some vertex $u$, we are able to get to any neighbor of $
 \begin{claim*} We can use this to form a path between any pair of vertices $(u,v)$ in the graph $H$.\end{claim*}
 \begin{proof}Because the graph $G$ is connected, all possible spanning trees of $G$ overlap over some edges in some way. As such, this means that given any two spanning trees of $G$, we can transform them, one edge at a time, into the other. Every transformation is an edge in $H$, a combination of transformations forms a path in $H$ connecting any two vertices $(u,v)$ in $H$. \end{proof}
 
-This algorithm has a runtime
+To apply the algorithm to produce a path between two vertices $(u,v)$ in the graph $H$ has a runtime of $O(|V| + |E|)$. Since we never want to back-track in $H$, we make sure to never touch edges and vertices we've seen before. Thus, we really only touch all vertices and edges one time to traverse $H$. Therefore, our runtime is $O(|V| + |E|)$.
 
 
 \newpage
@@ -143,12 +148,23 @@ This algorithm has a runtime
  \begin{algo*}
  \begin{enumerate}
  \item Assign weights of road = 1, and bridges = 0.
- \item Run Prim's algorithm on $G$ and get a spanning tree with the minimum number of roads and most bridges.
+ \item Run Prim's algorithm on $G$ and get a spanning tree with the minimum number of roads and most bridges, with total cost $weight_{roads}$
+ \item Set $r_{min} = weight_{roads}$
  \item Assign weights of road = 0, and bridges = 1.
- \item Run Prim's algorithm on $G$ and get a spanning tree with the 
+ \item Run Prim's algorithm on $G$ and get a spanning tree with the minimum number of bridges, and the most roads, with total cost $weight_{bridges}$
+ \item Set $r_{max} = (v-1) - weight_{bridges}$.
+ \item If $r_{min} \leq \floor{|V|/\sqrt{2}} \leq r_{max}$, then a spanning tree with $\floor{|V|/\sqrt{2}}$ roads exists. Otherwise, it doesn't exist.
  \end{enumerate}
  \end{algo*}
+ 
+ \begin{claim*} We can find the minimum number of roads $r_{min}$ needed in a spanning tree.\end{claim*}
+ \begin{proof} Since Prim's is designed to minimize total weight, By assigning all bridges a weight of 0 and roads a weight of 1, it stands that the spanning tree output by Prim's will take as many bridges as possible, unless it is forced to take a road (i.e. at some vertex $u$, the only available paths from $u$ are roads). So with the output of Prim's, we get some spanning tree, and more importantly some $weight{roads}$, which equals $r_{min}$.
+\end{proof}
 
+\begin{claim*} We can find the maximum number of roads $r_{max}$ in a spanning tree. \end{claim*}
+\begin{proof} We use Prim's again, except now we set the weights of all bridges to 1, and the weight of all roads to 0. Thus, Prim's will produce an MST with the least amount of bridges, since it only takes bridges when forced to. Thus, we are left with a spanning tree with the maximum number of roads possible in a spanning tree of $G$. There can't be any more roads because adding a single edge in a spanning tree forms a cycle. Keep in mind that spanning trees have a constant number of edges $|V|-1$. Now, taking the total cost output $weight{bridges}$, we can calculate the total number of roads in the spanning tree by subtracting the number of edges in total by the number of bridges $(v-1) - weight_{bridges}$.\end{proof}
 
+Now if we know $r_{min} and r_{max}$, we can safely say that if there exists a spanning tree with $\floor{|V|/\sqrt{2}}$ roads, then it must satisfy $r_{min} \leq \floor{|V|/\sqrt{2}} \leq r_{max}$.\\
 
+The runtime for Prim's is $O(mlogn)$, and since our algorithm is simply applying Prim's algorithm twice and doing constant time arithmetic operations on the outputs of both executions of Prim's, then comparing the values with $\floor{|V|/\sqrt{2}}$, the algorithm runs in $O(mlogn)$.
 \end{document}
