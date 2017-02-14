@@ -107,5 +107,25 @@ Let $G$ be a connected graph with two different spanning trees, $T$ and $T'$. We
 
 Now, from any graph $G$, we can build a graph $H$ as follows: the vertices of $H$ are the spanning trees of $G$, and there is an edge between two vertices of $H$ if the corresponding spanning trees are neighbors. Is it true that if $G$ is connected, then $H$ is connected?
 
+Given a connected graph $G$, we can say by definition that it contains at least one spanning tree, since otherwise the graph wouldn't be connected. With this graph H, our goal is to return a path between $u, v$ in $H$. In order to prove connectivity of $H$, it is enough to prove that we can always return such a path connecting two vertices in $H$.
+
+\newpage
+
+\section*{Solution to Problem 4 - Mixed Trees}
+ Let $G = G(V, E)$ be an arbitrary, connected, undirected graph with vertex set $V$ and edge set $E$. Assume that every edge in $E$ represents either a road or a bridge. Give an efficient algorithm that takes an input $G$ and decides whether there exists a spanning tree of $G$ where the number of edges that represents roads is $\floor{|V|/\sqrt{2}}$.
+ 
+ For this problem, $\floor{|V|/\sqrt{2}}$ is essentially a red herring, as its value does not actually bear any significance with regard to the graph (as stated in class). Instead, our goal should be to prove that a graph with these properties exists. To do this, we need to find a range corresponding to the minimum number of roads present in any vertex of $H$, and the maximum number of roads present in any vertex of $H$. We can apply Prim's algorithm to help us find these numbers.
+ 
+ 
+ \begin{algo*}
+ \begin{enumerate}
+ \item Assign weights of road = 1, and bridges = 0.
+ \item Run Prim's algorithm on $G$ and return the number of bridges. Subtract this from $E$ to get the maximum number of roads. 
+ \item Assign weights of road = 0, and bridges = 1.
+ \item Run Prim's algorithm on $G$ and this time, you'll return the minimum number of roads.
+ \end{enumerate}
+ \end{algo*}
+
+
 
 \end{document}
