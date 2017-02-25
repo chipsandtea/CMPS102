@@ -1,5 +1,5 @@
 \documentclass[11pt]{article}
-\usepackage{fullpage,amsthm,amsfonts,amssymb,epsfig,amsmath,times,amsthm}
+\usepackage{fullpage,amsthm,amsfonts,amssymb,epsfig,amsmath,times,amsthm,enumitem}
 
 \newtheorem{theorem}{Theorem}
 \newtheorem{claim}[theorem]{Claim}
@@ -7,13 +7,23 @@
 \begin{document}
 
 \begin{center}
-{\bf\Large CMPS 102 --- Quarter 20XX --  Homework X}
+{\bf\Large CMPS 102 --- Winter Quarter 2017 --  Homework 3}
 \end{center}
 
-\section*{Solution to Problem 1}
+\section*{Solution to Problem 1 - Tokens}
 
-Given input, construct a graph $G$ (as would be pictured below):
+You're playtesting a new boardgame from one of your friends in the Game Design major, and they want your help to figure out the optimal strategy. The game has $n$ rounds and in each round 1 $\leq i \leq n$ you must acquire $s_i$ tokens.\\
+There are two possible ways to acquire tokens in round $i$:
 
+\begin{enumerate}[label=(\Alph*)]
+\item Spend $r$ dollars per token, so $r * s_i$ in total, to acquire all tokens of round $i$.
+\item Spend $C$ dollars to acquire the tokens of round $i$ and of the next 3 rounds, independently of how many there are. (If you do this in round $i$, then your next choices concern rounds $i + 4$ and greater).
+\end{enumerate}
+
+\textbf{Example.} Suppose $r = 1$, $C = 40$, and the sequence of $s_i$ is $11, 9, 9, 12, 12, 12, 12, 9, 9, 11$. Then the cheapest way to acquire all the tokens is to choose action A for the first three rounds, then action B once, and then action A for the final three rounds.
+
+
+Give a dynamic programming algorithm for finding the cheapest way to acquire all tokens, given the sequence $s_1, s_2, ..., s_n$. You must describe not only how you determine the value of the optimal sequence of actions, but also the sequence of actions itself.
 %\includegraphics[width=1in]{sum.png}
 
 Note that there conditions and things. We must prove two claims.
