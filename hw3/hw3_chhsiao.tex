@@ -4,10 +4,12 @@
 \newtheorem{theorem}{Theorem}
 \newtheorem{claim}[theorem]{Claim}
 
+
 \begin{document}
 
 \begin{center}
-{\bf\Large CMPS 102 --- Winter Quarter 2017 --  Homework 3}
+{\bf\Large CMPS 102 --- Winter Quarter 2017 --  Homework 3}\\
+{\bf Christopher Hsiao - chhsiao@ucsc.edu - 1398305}
 \end{center}
 
 \section*{Solution to Problem 1 - Tokens}
@@ -126,7 +128,33 @@ Each execution of $OPT(j)$ runs in $O(1)$ time, and we call $OPT(j) n$ times. Th
 
 \subsection*{Part B}
 
+Observe that there can never be \textbf{more than} four adjacent spaces such that none of them are chosen, as the instance where four are chosen mean that this subset of four adjacent spaces are bounded on the left and right by chosen spaces. Thus, it holds that for any five adjacent spaces, at least one of them is in the optimal solution. Let these five spaces be at the wrap-around point (passing "GO" on the monopoly board), with index values $\{n-1, n, 1, 2, 3\}$, of which one is present in the optimal solution. 
 
+We will form five subarrays, of which five spaces are excluded (namely, some space $i$ being taken, and the four excluded squares around $i$). For the set of indexes $\{n-1, n, 1, 2, 3\}$, these subarrays are:
+
+\begin{itemize}
+	\item For $i = 1$, SUB$(1) = [4 ... n-2]$
+	\item For $i = 2$: SUB$(2) = [5 ... n-1]$
+	\item For $i = 3$: SUB$(3) = [6 ... n]$
+	\item For $i = n-1$: SUB$(n-1) = [2 ... n-4]$
+	\item For $i = n$: SUB$(n) = [3 ... n-3]$
+\end{itemize}
+
+We define $A($SUB$)$ to be calling the algorithm defined in part $A$ on the specified sub array SUB. The definition for the best possible value of taking space $i$ is found by calculating $P(i) + A(P(\text{SUB}(i)))$. We will represent this expression for the max value of taking space $i$ as $a_i$. Then, the values for the set $\{n-1, n, 1, 2, 3\}$ is as follows:
+
+\begin{itemize}
+	\item $a_1 = P(1) + A(P(\text{SUB}(1)))$
+	\item $a_2 = P(2) + A(P(\text{SUB}(2)))$
+	\item $a_3 = P(3) + A(P(\text{SUB}(3)))$
+	\item $a_{n-1} = P(n-1) + A(P(\text{SUB}(n-1)))$
+	\item $a_n = P(n) + A(P(\text{SUB}(n)))$
+\end{itemize}
+
+Observe that this applies to all values of $i$, as taking an $i$ excludes the four spaces around it, including wrap-arounds. From earlier, we know that at least one of these indexes are in the optimal solution, so we select the maximum of these five $a_{i-2,\ i-1,\ i,\ i+1,\ i+2}$ values.
+
+We store these values in an $OPT$ array of size $n$, and have each value equal the maximum value up to that index.
+
+This algorithm makes five $O(n)$ operations for each $n$ indexes, we have a runtime of $O(n)$.
 \pagebreak
 
 \section*{Solution to Problem 3 - Happy Customers}
@@ -140,6 +168,38 @@ Give a dynamic programming for determining the most happiness you can generate f
 \item The functions $f_i$ are non-decreasing, i.e., for every project $i$, if $t_1 \leq t_2$, then $f_i(t_i) \leq f_i(t_2)$
 \item The running time of your algorithm must be $O(n^am^bs^c)$ for some fixed integers $a, b, c \geq 0$.
 \end{itemize}
+
+
+\textbf{OPT Identity: }\\
+We define $OPT(i,j)$ to be the maximum happiness possible using the first $i$ projects in the first $j$ hours.
+
+\begin{equation}
+	OPT(i,j) = 
+	\begin{cases}
+	0 & \text{if} \ i = 0\\
+	f_i(j) & \text{if} \ i = 1\\
+	\underset{k \leq j}{max} \{f_i(k) + OPT(i-1, j-k)\} & \text{if} \ i > 1
+	\end{cases}
+\end{equation}
+
+\begin{proof}
+\textbf{For $i = 0$:}\\
+If there aren't any jobs to work, we can't possibly generate any happiness, since no work can be done.
+
+\textbf{For $i = 1$:}
+Since there is only one job to work, the maximum amount of happiness we can generate is simply putting in all hours possible into this one task, until you reach $s_i$ or run out of hours.
+
+\textbf{For $i>1$:}
+At each new job we have to ask the question "How many hours do we devote to this project?". Let $k$ be the number of hours for the current job $i$. We consider all possibilities of working job $i$ starting with $k=0$, to $k=j$. This represents not working this project at all to putting in all possible hours into this project. For every $k$ value, the amount of happiness is $f_i(k)$ for the current job, plus $OPT(i-1, j-k)$ which represents the maximum happiness considering all jobs from $1 ... i-1$, with $j-k$ hours now available since we dedicate $k$ hours to the current project $i$. The total number of values available at each $OPT(i, j)$ iteration is $j$, since we need to consider $k = \{0...j\}$. Of these $j$ values, we select the one with the maximum happiness, which gets us closer to our goal of finding the maximum amount of happiness across all projects.
+
+Observe that since this represents all possible happiness values and thus all choices we can make, the identity holds.
+\end{proof}
+
+\textbf{OPT 2D Array: }
+
+We fill out an $n\ x\ m$ array, to store $OPT(i,j)$ values for all $n$ values of $i$, and all $m$ values of $j$. We will call this array $ARR$, and it follows that $ARR[i][j] = OPT(i, j)$. Observe that we can immediately fill out the entries where $i = 1$ immediately, since $OPT$ refers only to the indexes with one less job, and $OPT(i, j) = 0$ when $i = 0$. With all $i = 1$ entries filled out, we can then fill out all $i = 2$ entries using the $i = 1$ values. We repeat this process until $i = n$. Observe that at each index $i$, we do $j$ work to find all happiness values for every combination of hours possible. Thus, our desired value for the maximum happiness possible is found at $A[n][m]$.
+
+Since $j$ is bounded by $m$, it holds that the amount of work done at each $i$ is $O(m)$ for all $m$ hours. Since there are $n \cdot m$ indexes to do $O(m)$ work at each index, we have a running time of $O(n \cdot m \cdot m) = O(nm^2)$. 
 
 \pagebreak
 
@@ -160,13 +220,13 @@ In the fractional shopping problem, the same $n$ items are sold in bulk, so the 
 \subsection*{Part 1}
 \textbf{Algorithm:} Sort the items either by ascending price, or descending benefit (essentially benefit/price ratio, since we know that sorting by ascending price == sorting by descending benefit). Buy as many items starting from index = 1, moving on when you run out of items to buy of that type or if buying one more unit puts you over, until you hit or would go over $P$ (assuming $P$ is greater than the total cost of all items).
 \begin{proof}
-Let some supposedly better solution be $O$, and let the output of this algorithm to be $S$. Go to the first instant where the solutions differ. Since our solution is based on a sorting of benefit/price ratio, at any index $i$ where the solutions differ means that they either moved on to a different item while they could still have purchased the previous one (of greater value), or stopped purchasing items while they still could have. In either case, simply either exchange their purchase decision (set $O(i) = $S(i)) with the algorithms (since the benefit is guaranteed to be higher as the algorithm always purchase with highest value possible). This algorithm runs in $O(nlogn)$ to sort the items, then purchasing costs $O(n)$, which gets absorbed into $O(nlogn)$.
+Let some supposedly better solution be $O$, and let the output of this algorithm to be $S$. Go to the first instant where the solutions differ, and let this index be $i$. Now, since we purchase the item with least price (and by the special case, greatest benefit), that means that at some $i$, $O(i)$ chooses some item with a greater price and/or less benefit. Thus, simply exchange $O(i)$ with $S(i)$, and the solution is guaranteed to at least stay the same, and get better otherwise. This algorithm runs in $O(nlogn)$ to sort the items, then purchasing costs $O(n)$, which gets absorbed into $O(nlogn)$.
 \end{proof}
 
 \subsection*{Part 2}
 \textbf{Algorithm:} Sort the items based on benefit/price ratio, then purchase items until you spend exactly $P$ dollars, using divisibility to guarantee you can purchase any dollar amount of an item.
 \begin{proof}
-Given a supposedly more optimal solution $O$ and the algorithms solution $S$, let $i$ be the index where the decisions first differ. Since $S(i)$ has the highest benefit/price ratio possible at $i$, that means $O(i)$ chose to purchase some item that was not the highest price ratio it could have purchased at the time. Thus, we can swap $O(i)$ with $S(i)$. If we do this for all indexes where $O$ and $S$ differ, then eventually $O = S$, as we can guarantee that at every point, swapping the choices made won't worsen the solution. Normally when simply choosing by benefit/price ratio we can't guarantee optimality because such an algorithm is too short-sighted, and can't account for combinations that can use the $P$ dollars more efficiently. However, with the power of divisibility, we can guarantee that we always spend $P$ dollars, so we are simply concerned with making every dollar count by picking items with the greatest value i.e. benefit/price ratio.
+Given a supposedly more optimal solution $O$ and the algorithms solution $S$, let $i$ be an index where the decisions differ. Since $S(i)$ has the highest benefit/price ratio possible at $i$, that means $O(i)$ chose to purchase some item that was not the highest price ratio it could have purchased at the time. Thus, we can swap $O(i)$ with $S(i)$. If we do this for all indexes where $O$ and $S$ differ, then eventually $O = S$, as we can guarantee that at every point, swapping the choices made won't worsen the solution. Normally when simply choosing by benefit/price ratio we can't guarantee optimality because such an algorithm is too short-sighted, and can't account for combinations that can use the $P$ dollars more efficiently. However, with the power of divisibility, we can guarantee that we always spend $P$ dollars, so we are only concerned with making every dollar count by picking items with the greatest value i.e. best possible benefit/price ratio at every index.
 \end{proof}
 
 \end{document}
