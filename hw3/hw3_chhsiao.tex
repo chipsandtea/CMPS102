@@ -195,7 +195,7 @@ At each new job we have to ask the question "How many hours do we devote to this
 Observe that since this represents all possible happiness values and thus all choices we can make, the identity holds.
 \end{proof}
 
-\textbf{OPT 2D Array: }
+\textbf{2D Shadow Array: }
 
 We fill out an $n\ x\ m$ array, to store $OPT(i,j)$ values for all $n$ values of $i$, and all $m$ values of $j$. We will call this array $ARR$, and it follows that $ARR[i][j] = OPT(i, j)$. Observe that we can immediately fill out the entries where $i = 1$ immediately, since $OPT$ refers only to the indexes with one less job, and $OPT(i, j) = 0$ when $i = 0$. With all $i = 1$ entries filled out, we can then fill out all $i = 2$ entries using the $i = 1$ values. We repeat this process until $i = n$. Observe that at each index $i$, we do $j$ work to find all happiness values for every combination of hours possible. Thus, our desired value for the maximum happiness possible is found at $A[n][m]$.
 
