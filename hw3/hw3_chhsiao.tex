@@ -48,8 +48,41 @@ The minimum cost must be $0$, since there have been $0$ rounds thus far, and we 
 We must take option $A$ for all choices, since option $B$ requires at least 4 rounds. The first time $B$ can be invoked is when $j = 4$ where option $B$ is invoked on the first index.\\
 
 \textbf{For $j \geq 4$:}\\
-Our job is to consider our options between $A$ and $B$, and pick the smaller one. Option $A$ is to calculate the cost of the current round with $(r \cdot s_j)$, and add it to the running sum of minimum costs, represented by $OPT(j-1)$.
+Our job is to consider our options between $A$ and $B$, and pick the smaller one. Option $A$ is to calculate the cost of the current round with $(r \cdot s_j)$, and add it to the running sum of minimum costs, represented by $OPT(j-1)$. Option $B$ is to calculate the cost of four rounds $C$, and add it to $OPT(j-4)$, since we obviously want to avoid counting node values we shouldn't think of, and choosing Option $B$ "occupies" four indexes. This is also where the cost $C$ is paid. All that is left is to take these two values and take the smaller of the two, since our goal is end up with the minimum total cost and it wouldn't make sense to pick a higher cost at any point.
 \end{proof}
+
+\textbf{Shadow Array: }
+
+We will call the shadow array BIT, and set it to size $n$. Then, we'll set the values like so:
+
+\begin{equation}
+	BIT(j) = 
+	\begin{cases}
+	0 & \text{if} \ \text{Option A was chosen}\\
+	1 & \text{if} \ \text{Option B was chosen}\\
+	\end{cases}
+\end{equation}
+
+So, we have a bitstring BIT. Notice that all values at $j = \{1,2,3\}$ are 0, since those correspond to the first three executions of the algorithm, where choosing $B$ was not yet possible.
+
+Using BIT, we can then determine the sequence of actions taken to yield the minimum total cost to collect all the tokens across $n$ rounds.\\
+
+\textbf{Sequence Algorithm: }
+\begin{enumerate}
+	\item Set index $k = n$. Initialize a string $ANS$.
+	\item If $BIT(k) = 0$, append $A$ to $ANS$ and decrement $k$. 
+	\item If $BIT(k) = 1$, append $B$ to $ANS$ and decrease $k$ by $4$.
+	\item Repeat this process until $k \leq 0$.
+	\item Reverse $ANS$ to get a string of characters (as we recorded them in reverse order), with each character corresponding to both the choices made and the order in which they were made.
+\end{enumerate}
+
+\begin{proof}
+The reason why step $2$ is true is because it represents choice $A$, which is localized to only one round. Rounds before and after a round where $A$ was chosen are independent of each other. Remember that the goal of this algorithm is to retrace the steps taken that yield the minimum total cost. Step $3$ is true because since we scroll backwards through the array, when we encounter a decision of $B$, then it must have been the last round in the set of $4$. After writing this decision down, we can jump $4$ ahead, since it's just one decision which spanned four entries in $BIT$. Thus, we can accurately record the choices we made in a string.
+\end{proof}
+
+The $OPT$ and $BIT$ arrays are filled at the same time as the algorithm executes $n$ times. To find the value of the minimum cost, we wait until $OPT(n)$ is run, and take its value as the minimum cost. Afterwards, we run the Sequence Algorithm detailed above on the $BIT$ array to get the string $ANS$ corresponding to the decisions made and their order.
+
+Observe that this results in two separate passes over arrays of size $n$. Thus, the runtime of this algorithm is $O(n)$.
 
 \pagebreak
 
@@ -61,6 +94,38 @@ Another Game Design friend is working on a Monopoly spin-off with zoning laws! T
 \item Give a dynamic programming algorithm for determining the maximum value of the spaces one can own. You do \textbf{not} need to output the corresponding set of spaces.
 \item Of course, in real Monopoly, the board wraps around, so let's take that into account as well. That is, assume that if you own space 1, you can not own spaces $n$ or $n - 1$ (besides spaces 2, 3). Solve this problem using DP (ideally, reusing your code for (a) (with tiny modifications) a few times).
 \end{enumerate}
+
+\noindent\rule{17cm}{0.4pt}
+
+\subsection*{Part A}
+We define $OPT(j)$ to be the maximum value of the first $j$ spaces, and store each of these values in an array called $OPT$ of size $n$. 
+
+\textbf{OPT Identity}
+
+\begin{equation}
+	OPT(j) = 
+	\begin{cases}
+	max_{1, 2, 3} \ P(j) & \text{if} \ j = \{1, 2, 3\}\\
+	max\{OPT(j-1), OPT(j-3) + P(j)\} & \ o.w.
+	\end{cases}
+\end{equation}
+
+\begin{proof}
+	\textbf{For $j = \{1, 2, 3\}$:}\\
+	For the first three spaces, it is impossible to pick more than one of them at a time, since all of them fall within two units of any other square in either direction. Thus, we must pick the largest of the three values to maximize the total value.
+	
+	\textbf{For all other values of $j \leq n$:}
+	The two options left are whether or not we take the space, or not. If we don't, then $OPT(j) \text{is indistinguishable from} OPT(j-1)$, so we choose that if that yields a greater value. If instead we choose to take the space, then we find the value of the current square $P(j)$, and add it to the only viable space (more than 2 spaces away) $OPT(j-3)$. By calculating these values and comparing them, we select the one which yields the greatest value.
+	
+	Observe that these are the only options we can make at every $j$, and thus the identity holds.
+\end{proof}
+
+To actually calculate the maximum value of the spaces one can own, observe that by definition of $OPT(j)$, we seek the value of $OPT(n)$. Thus, we simply run $OPT(j)$ on all values $1 ... n$, and output the value of $OPT(n)$ value, which can be found in the $n^{th}$ index of our $OPT$ array. We don't need a shadow array for this problem, since the decisions we made to reach this output isn't necessary.
+
+Each execution of $OPT(j)$ runs in $O(1)$ time, and we call $OPT(j) n$ times. Thus, the runtime of this algorithm is $O(n)$.
+
+\subsection*{Part B}
+
 
 \pagebreak
 
