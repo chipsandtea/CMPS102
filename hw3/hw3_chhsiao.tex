@@ -155,6 +155,12 @@ In the fractional shopping problem, the same $n$ items are sold in bulk, so the 
 \item Prove that the fractional version has the following property: the optimal solution can be found by making a series of locally optimal choices. Therefore, give a greedy algorithm to solve this version and prove it's correct.\\
 \textbf{Hint:} Ditto
 \end{enumerate}
+\noindent\rule{17cm}{0.4pt}
 
+\subsection*{Part 1}
+\textbf{Algorithm:} Sort the items either by ascending price, or descending benefit (essentially benefit/price ratio, since we know that sorting by ascending price == sorting by descending benefit). Buy as many items starting from index = 1, moving on when you run out of items to buy of that type or if buying one more unit puts you over, until you hit or would go over $P$ (assuming $P$ is greater than the total cost of all items).
+\begin{proof}
+Let some supposedly better solution be $O$, and let the output of this algorithm to be $S$. Go to the first instant where the solutions differ. Since our solution is based on a sorting of benefit/price ratio, at any index $i$ where the solutions differ means that they either moved on to a different item while they could still have purchased the previous one (of greater value), or stopped purchasing items while they still could have. In either case, simply either exchange their purchase decision with the algorithms (since the benefit is guaranteed to be higher as the algorithm always purchase with highest value in mind).
+\end{proof}
 
 \end{document}
