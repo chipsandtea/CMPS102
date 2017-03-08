@@ -1,0 +1,72 @@
+\documentclass[11pt]{article}
+\usepackage{fullpage,amsthm,amsfonts,amssymb,epsfig,amsmath,times,amsthm,enumitem,mathtools}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{claim}[theorem]{Claim}
+\DeclarePairedDelimiter{\ceil}{\lceil}{\rceil}
+
+
+\begin{document}
+
+\begin{center}
+{\bf\Large CMPS 102 --- Winter Quarter 2017 --  Homework 3}\\
+{\bf Christopher Hsiao - chhsiao@ucsc.edu - 1398305}
+\end{center}
+
+\section*{Solution to Problem 1 - Doing Dishes}
+
+Consider a set $S \text{of} n$ computer scientist roommates who would like to determine "who will do the dishes after dinner" for the next $m$ nights. Not all roommates have dinner jat home every night, so let $S_i$ denote the subset of roommates who will have dinner at home on the $i^{th}$ night and let $w_i \leq |S_i|$ be the number of people needed to do the dishes on the $i^{th}$ night (some nights multiple people are needed).
+
+For each roommate $j \in S$ and night $1 \leq i \leq m$, let $Q_i(j) = 0$ if $j$ does not eat at home on the $i^{th}$ night, otherwise let $Q_i(j) = w_i/|S_i|$, i.e., if $j$ eats at home on the $i^{th}$ night. Now, for each roommate $j$, let
+\begin{equation}
+	R_j = \sum_{i=1}^{m} Q_i(j) .
+\end{equation}
+
+Clearly, we can't hope that everyone does dishes exactly $R_j$ nights since, in general, $R_j$ won't even be an integer.
+
+Nevertheless, the computer scientists claim:
+\begin{center}
+	There exists a dish-washing plan under which\\
+	each roommate $j \in S$ does the dishes at most $\ceil[\big]{R_j}$ times.
+\end{center}
+
+Prove the claim. That is, be a computer scientist.
+
+\textbf{Hint:} Formulate as a flow problem between roommates and nights and use the Integrality Theorem.
+
+\noindent\rule{17cm}{0.4pt}
+
+
+\pagebreak
+
+\section*{Solution to Problem 2 - Fussy Eaters}
+
+You are planning a dinner party for $n$ friends who, naturally, have all sorts of dietary restrictions and allergies. Your plan is to cook some appetizer dishes and some main dishes and portion them so that you end up with $n$ appetizer \textit{portions} and $n$ main \textit{portions}. You email everyone, and for each person $i \in \{1, ... , n\}$ you get back their list $A_i$ of OK-to-eat appetizer dishes and their list $M_i$ of OK-to-eat main dishes.
+
+Design an efficient algorithm that takes as input the number of portions of each dish and the lists $A_i, M_i$, designs a max flow instance, has it solved, and uses the (value of the) maximum flow to decide whether or not it is possible to give each friend an appetizer and a main portion that is OK for them to eat.
+
+\noindent\rule{17cm}{0.4pt}
+
+\pagebreak
+
+\section*{Solution to Problem 3 - Verbal Assault}
+
+You are an English teacher assigning presentations to students. Each of your $n$ students will receive a topic and 31 fancy words that they must use in discussing the topic. You've announced the set of topics $T$ and the set of fancy words $F$, and have received from each student $i \in \{1, ..., n\}$ a set $T_i \subseteq T$ of topics the student is interested in, and a set $F_i \subseteq F$ of fancy words that the student would like to use.
+
+You want to see if it is possible to assign to each student a topic and \textit{exactly} 31 words such that:
+\begin{itemize}
+	\item Each topic is assigned to at most 2 students.
+	\item Each fancy word $w_i$ is assigned to at most $t_i$ students.
+\end{itemize}
+
+Describe a method that takes as input the sets $T_i$ and $F_i$ and the number $t_1, ..., t_k$ and returns either "No", or an assignment of topics and words that meets the requirements.
+
+
+\pagebreak
+
+\section*{Solution to Problem 4 - Mi-$k$ Drop}
+
+Let $G = (V,E)$ be a directed graph with a source $s \in V$, a sink $t \in V$, and where every edge $e \in E$ has capacity exactly 1. Let $k$ be he value of the maximum flow in $G$.
+
+\textbf{Question:} Given an arbitrary integer $1 \leq q \leq k$, can you always remove $q$ edges from $G$ so that in the resulting graph $G'$ the value of the maximum flow is $k-q$?
+\end{document}
