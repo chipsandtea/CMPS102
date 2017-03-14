@@ -1,10 +1,10 @@
 \documentclass[11pt]{article}
-\usepackage{fullpage,amsthm,amsfonts,amssymb,epsfig,amsmath,times,amsthm,enumitem,mathtools}
+\usepackage{fullpage,amsthm,amsfonts,amssymb,epsfig,amsmath,times,amsthm,enumitem,mathtools,graphicx}
 
 \newtheorem{theorem}{Theorem}
 \newtheorem{claim}[theorem]{Claim}
 \DeclarePairedDelimiter{\ceil}{\lceil}{\rceil}
-
+\graphicspath{{graphs/}}
 
 \begin{document}
 
@@ -51,6 +51,36 @@ Design an efficient algorithm that takes as input the number of portions of each
 \noindent\rule{17cm}{0.4pt}
 \subsection*{Appetizers}
 We build the following flow network. There is a node $p_i \in \{p_1, ..., p_n\}$ for each person $i$, and a node $a_j \in \{a_1, ..., a_n\}$ for each appetizer $j$. There is an edge $(p_i, a_j)$ of capacity $1$ if appetizer $a_j \in A_i$, where $A_i$ represents the appetizers person $i$ is okay with eating. We then connect a super-source $s$ to every person node $p_i \in \{p_1, ..., p_n\}$ with an edge $(s, p_i)$ of capacity 1. Then, we connect every appetizer node $a_j \in \{a_1, ..., a_n\}$ to a super-sink $t$ with an edge $(t, a_j)$ with capacity 1.
+
+\begin{center}
+\includegraphics[width=10cm,height=10cm,keepaspectratio]{q2_appetizers}
+\end{center}
+
+\begin{claim}
+Given a $flow = n$, we can determine an assignment of $n$ people to $n$ dishes such that all people are are satisfied.
+\end{claim}
+
+\begin{proof}
+There cannot be any $flow > n$, because the total capacity of the cut across the source $s$ leading to the person nodes is $n$. More explicitly, since there are $n$ edges from $s$, each with capacity $1$, there cannot possibly be any flow greater than $n$ across the graph.\\
+\\
+Now, let us discuss what a max flow of $n$ implies.
+\begin{enumerate}
+\item All edges $(s, p_i)$ for $i = 1 ... n$ are saturated, as each of the $n$ edges has capacity $1$.
+\item All flow was able to traverse the edges $(p_i, a_j)$, such that $n$ flow reaches all $a_j$ nodes.
+\item Crucially, there is no "overflow" on any $(a_j, t)$ for $j = 1...n$ edges, as a max flow of $n$ means that all edges directed at $t$ (which have capacity 1) are saturated.
+\end{enumerate}
+
+We can find this max flow using $Ford-Fulkerson$. However, note that the flow across the inner edges $(p_i, a_j)$ is distributed, and not necessarily integers. However, by the integrality theorem, since our flow $n$ and all capacities are integral, it then follows that the flow across the inner edges are either $(0, 1)$, with a flow of $1$.
+\end{proof}
+
+\begin{claim}
+No pairing exists where max flow $< n$ where all guests are satisfied.
+\end{claim}
+\begin{proof}
+From the proof above, we proved that for any flow $f = n$, there exists a stable pairing where no people are dissatisfied. A significant part of the argument was using the saturation of the edges $(a_j, t)$ to represent all appetizers being chosen. For $f < n$, even if the difference $n-f \neq$ some positive integer, it is clear that it is otherwise impossible to saturate some subset of the edges $(a_j, t)$. This means that not all appetizers were able to be "chosen", and some guest was left dissatisfied.. The issue is even more cut and dry when $n-f =$ some integer, because that means only $n-1$ appetizers were chosen, and some guest was left appetizer-less (and dissatisfied). 
+\end{proof}
+
+The runtime of this algorithm is simply the runtime of the $Ford-Fulkerson$ algorithm, which runs in $O(\text{people} \cdot \text{appetizers})$. Since there are $n$ people and $n$ appetizers, the runtime therefore is $O(n^2)$.
 
 \pagebreak
 
