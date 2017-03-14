@@ -36,6 +36,9 @@ Prove the claim. That is, be a computer scientist.
 
 \noindent\rule{17cm}{0.4pt}
 
+% TODO: IMAGE HERE
+
+We will form our graph as shown above. The source node $s$ is connected to all $n$ people, such that there exists an edge between $s$ and all $\{p_1, p_2, p_3, ... p_n\}$
 
 \pagebreak
 
@@ -46,6 +49,8 @@ You are planning a dinner party for $n$ friends who, naturally, have all sorts o
 Design an efficient algorithm that takes as input the number of portions of each dish and the lists $A_i, M_i$, designs a max flow instance, has it solved, and uses the (value of the) maximum flow to decide whether or not it is possible to give each friend an appetizer and a main portion that is OK for them to eat.
 
 \noindent\rule{17cm}{0.4pt}
+\subsection*{Appetizers}
+We build the following flow network. There is a node $p_i \in \{p_1, ..., p_n\}$ for each person $i$, and a node $a_j \in \{a_1, ..., a_n\}$ for each appetizer $j$. There is an edge $(p_i, a_j)$ of capacity $1$ if appetizer $a_j \in A_i$, where $A_i$ represents the appetizers person $i$ is okay with eating. We then connect a super-source $s$ to every person node $p_i \in \{p_1, ..., p_n\}$ with an edge $(s, p_i)$ of capacity 1. Then, we connect every appetizer node $a_j \in \{a_1, ..., a_n\}$ to a super-sink $t$ with an edge $(t, a_j)$ with capacity 1.
 
 \pagebreak
 
@@ -61,6 +66,7 @@ You want to see if it is possible to assign to each student a topic and \textit{
 
 Describe a method that takes as input the sets $T_i$ and $F_i$ and the number $t_1, ..., t_k$ and returns either "No", or an assignment of topics and words that meets the requirements.
 
+\noindent\rule{17cm}{0.4pt}
 
 \pagebreak
 
@@ -69,4 +75,13 @@ Describe a method that takes as input the sets $T_i$ and $F_i$ and the number $t
 Let $G = (V,E)$ be a directed graph with a source $s \in V$, a sink $t \in V$, and where every edge $e \in E$ has capacity exactly 1. Let $k$ be he value of the maximum flow in $G$.
 
 \textbf{Question:} Given an arbitrary integer $1 \leq q \leq k$, can you always remove $q$ edges from $G$ so that in the resulting graph $G'$ the value of the maximum flow is $k-q$?
+
+\noindent\rule{17cm}{0.4pt}
+
+Yes.
+
+\begin{proof}
+By the MaxFlow-MinCut theorem, the maximum flow in a network is bounded by $|min\text{ }cut|$, which means that if $k$ is the maximum flow in $G$, then $k$ is also $|min\text{ }cut|$. Since $|min\text{ }cut|$ acts as an upper bound on our flow, it stands that removing edges in $G$ is a perfectly valid operation as long as the number of edges removed is bounded by $1 \leq q \leq k$. Since every edge in $G$ has capacity $1$, removing any edge  reduces the maximum flow by 1. Repeat this process $q$ times, and you have a max flow reduced by $q$, aka $k-q$.
+\end{proof} 
+
 \end{document}
